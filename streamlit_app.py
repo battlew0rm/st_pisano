@@ -6,7 +6,6 @@ from gmpy2 import fib
 
 st.title("Gibonacci period calculators")
 
-# User input for modulus
 max_mod = 100
 m = st.number_input(f"Enter modulus (max {max_mod}):", min_value=2, max_value=max_mod)
 
@@ -15,8 +14,6 @@ fac_str = " \\times ".join(f"{p}^{e}" for p, e in facs.items())
 
 st.markdown(f"${m} = {fac_str}$")
 
-
-# Function to generate a random color
 def random_color(seed):
     random.seed(seed)
     return "#{:06x}aa".format(random.randint(0, 0xFFFFFF))
@@ -31,8 +28,6 @@ class Cell:
     def __eq__(self, lhs):
         return self.a == lhs.a and self.b == lhs.b
 
-
-# Function to create a grid of colored squares
 cells = []
 for i in range(m):
     for j in range(m):
@@ -53,7 +48,6 @@ for i in range(m):
 
 
 st.markdown(f"#### $G_0, G_1$ state pairs mod ${m}$ colored by sequence")
-# for index, g in enumerate(cells):
 col_count = 15
 rows = int(len(cells) / col_count) + (len(cells) % col_count > 0)
 for i in range(rows):
@@ -86,8 +80,6 @@ for i in range(m):
     for j in range(m):
         c = find_cycle(i, j, m)
         cycles.add(c)
-
-# Example computed results
 data = {
     "Value": list(len(c) for c in cycles),
     "Cycle": list(cycles),
@@ -95,7 +87,6 @@ data = {
 df = pd.DataFrame(data)
 
 
-# Define a function to apply conditional formatting
 def highlight_fibonacci_lucas(row):
     cycle: list = row["Cycle"]
     if len(cycle) < 2:
@@ -106,7 +97,6 @@ def highlight_fibonacci_lucas(row):
     return [f"background-color: {clr}"] * len(row)
 
 
-# Apply the conditional formatting
 styled_df = df.style.apply(highlight_fibonacci_lucas, axis=1)
 
 st.write(f"#### Cycle lengths for {m}")
@@ -117,26 +107,21 @@ st.bar_chart(df.set_index("Value"))
 
 
 def solve_modular_equations(a, b, p):
-    # Calculate Fibonacci numbers
     F_n = fib(p)
     F_n_minus_1 = fib(p - 1)
     solutions = []
-    for m in range(3, 3000):
-        # Check the first equation
+    for m in range(3, 10000):
         G_n = (b * F_n + a * F_n_minus_1) % m
         if G_n != a:
             continue
 
-        # Check the second equation
         G_n_plus_1 = ((b + a) * F_n + b * F_n_minus_1) % m
         if G_n_plus_1 == b:
             solutions.append(m)
 
     return solutions
 
-
-### Modular equasion solver
-st.markdown("$G_n = b\\cdot F_n + a\\cdot F_{n-2} \\equiv a \\pmod{m}$")
+st.markdown("$G_n = b\\cdot F_n + a\\cdot F_{n-1} \\equiv a \\pmod{m}$")
 st.markdown("$G_{n+1} = (b+ a)\\cdot F_n + b\\cdot F_{n-1} \\equiv b \\pmod{m}$")
 
 a = st.number_input("a =", min_value=0, max_value=30)
